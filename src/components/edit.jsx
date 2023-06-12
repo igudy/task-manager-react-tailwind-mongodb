@@ -13,7 +13,7 @@ const EditTask = () => {
   const [taskName, setTaskName] = useState("")
 
   useEffect(() => {
-    console.log("Task Id:", taskId)
+    // console.log("Task Id:", taskId)
     const fetchTask = async () => {
       try {
         const response = await axios.get(
@@ -21,7 +21,7 @@ const EditTask = () => {
         )
         setTaskName(response.data.name)
       } catch (error) {
-        console.log("Error fetching task:", error)
+        // console.log("Error fetching task:", error)
       }
     }
 
@@ -31,7 +31,7 @@ const EditTask = () => {
   const handleUpdateTask = async (e) => {
     e.preventDefault()
 
-    console.log("Updating task...")
+    // console.log("Updating task...")
 
     try {
       await axios.patch(`http://localhost:3000/api/v1/tasks/${taskId}`, {
@@ -41,7 +41,7 @@ const EditTask = () => {
 
       // navigate("/")
     } catch (error) {
-      console.log("Error updating task:", error)
+      // console.log("Error updating task:", error)
     }
   }
 

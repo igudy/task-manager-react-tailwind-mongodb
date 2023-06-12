@@ -4,9 +4,10 @@ import Wallpaper from "../assets/rec.png"
 import Add from "../assets/add-button.png"
 import Delete from "../assets/delete.png"
 import Edit from "../assets/edit.png"
-import { format, getDay, getTime } from "date-fns"
+import { format } from "date-fns"
 import Footer from "./footer"
 import { useNavigate } from "react-router-dom"
+import { toast, ToastContainer } from "react-toastify"
 
 const todo = () => {
   const [currentTime, setCurrentTime] = useState("")
@@ -16,33 +17,23 @@ const todo = () => {
   const [taskName, setTaskName] = useState("")
   const navigate = useNavigate()
 
-  // Get functionality
   useEffect(() => {
     const fetchTasks = async () => {
-      setLoading(false)
+      setLoading(true)
       setError(null)
 
       try {
         const response = await axios.get("http://localhost:3000/api/v1/tasks")
         setTasks(response?.data?.tasks)
-        // console.log(response.data)
         setLoading(false)
       } catch (error) {
-        setError("Error fetching users")
+        setError("Error fetching tasks")
         setLoading(false)
       }
     }
 
     fetchTasks()
   }, [])
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (error) {
-    return <div>{error}</div>
-  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,12 +49,11 @@ const todo = () => {
   const secondFormattedDate = format(today, "MMMM d")
   const dayOfWeek = format(today, "EEEE")
 
-  // Post/Create functionality
   const handleAddTask = async (e) => {
     e.preventDefault()
 
     try {
-      setLoading(true)
+      // setLoading(true)
       setError(null)
 
       const response = await axios.post("http://localhost:3000/api/v1/tasks", {
@@ -71,32 +61,42 @@ const todo = () => {
       })
 
       setTaskName("")
-      setTasks([...tasks, response?.data?.task])
-      window.location.reload()
-      //   setTasks((prevTasks) => [...prevTasks, response?.data?.task])
+      setTasks((prevTasks) => [...prevTasks, response?.data?.task])
+      toast.success("Task added successfully!")
     } catch (error) {
       setError("Error adding task")
-    } finally {
-      setLoading(false)
     }
+    // finally {
+    // setLoading(false)
+    // }
   }
 
-  // Delete functionality
   const handleDeleteTask = async (taskId) => {
     try {
-      setLoading(true)
+      // setLoading(true)
       setError(null)
 
       await axios.delete(`http://localhost:3000/api/v1/tasks/${taskId}`)
 
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId))
-      window.location.reload()
+      toast.success("Task deleted successfully!")
     } catch (error) {
       setError("Error deleting task")
-    } finally {
-      setLoading(false)
     }
+
+    // finally {
+    //   setLoading(false)
+    // }
   }
+
+  // if (loading) {
+  //   return <div>Loading...</div>
+  // }
+
+  if (error) {
+    return <div>{error}</div>
+  }
+
   return (
     <>
       <div className="font-['poppins']">
@@ -145,30 +145,30 @@ const todo = () => {
               {/* Tasks */}
               {tasks.map((task) => (
                 <div
-                  className="flex mt-7 bg-white  border-2 border-gray-500 h-[70px] w-[330] hover:border-hidden rounded-xl shadow-lg shadow-indigo-500/20"
+                  className="flex flex-wrap mt-7 bg-white  border-2 border-gray-500 h-[50px] w-[330] hover:border-hidden rounded-xl shadow-lg shadow-indigo-500/20"
                   key={task?._id}
                 >
                   <div className="mt-3 px-3">
                     <p className="text-black-300">{task?.name}</p>
-                    <p className="text-gray-500 font-light text-[12px]">
+                    {/* <p className="text-gray-500 font-light text-[12px]">
                       {dayOfWeek} {secondFormattedDate}
-                    </p>
+                    </p> */}
                   </div>
 
-                  <div className="flex space-x-4 mx-auto mt-3">
+                  <div className="flex space-x-4 ml-auto mt-3">
                     <button
                       onClick={() => navigate(`/edit/${task._id}`)} // Assuming you have imported 'useNavigate' as 'navigate'
                       className="focus:outline-none"
                     >
                       <img
                         src={Edit}
-                        className="h-[20px] width-[20px]"
+                        className="h-[20px] mb-[25px] width-[20px]"
                         alt="Edit"
                       />
                     </button>
                     <img
                       src={Delete}
-                      className="h-[20px] width-[20px] cursor-pointer"
+                      className="h-[20px] width-[20px] !mr-[7px] cursor-pointer"
                       alt="Delete"
                       onClick={() => handleDeleteTask(task._id)}
                     />
@@ -179,11 +179,10 @@ const todo = () => {
           </div>
         </div>
       </div>
-      <div className="h-[1000px]"></div>
+      <div className="h-[500px]"></div>
 
-      <>
-        <Footer />
-      </>
+      <Footer />
+      <ToastContainer />
     </>
   )
 }
