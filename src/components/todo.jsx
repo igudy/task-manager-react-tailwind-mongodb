@@ -6,6 +6,7 @@ import Delete from "../assets/delete.png"
 import Edit from "../assets/edit.png"
 import { format, getDay, getTime } from "date-fns"
 import Footer from "./footer"
+import { useNavigate } from "react-router-dom"
 
 const todo = () => {
   const [currentTime, setCurrentTime] = useState("")
@@ -13,6 +14,7 @@ const todo = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [taskName, setTaskName] = useState("")
+  const navigate = useNavigate()
 
   // Get functionality
   useEffect(() => {
@@ -88,6 +90,7 @@ const todo = () => {
       await axios.delete(`http://localhost:3000/api/v1/tasks/${taskId}`)
 
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId))
+      window.location.reload()
     } catch (error) {
       setError("Error deleting task")
     } finally {
@@ -114,21 +117,7 @@ const todo = () => {
             </div>
             <div className="my-[90px]"></div>
             <div className="mx-[13px] mt-5">
-              {/* <div className="flex mt-6">
-                <input
-                  type="text"
-                  id="task"
-                  className="block p-2 text-[#888888] border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-300  h-[40px] w-[250px]"
-                  placeholder="Add Task"
-                />
-                <img
-                  src={Add}
-                  className="h-[45px] width-[45px] mx-2 my-[-2px]"
-                  alt="nature"
-                />
-              </div> */}
-
-              {/* Chat gpt doings */}
+              {/* Form to submit task */}
               <form onSubmit={handleAddTask}>
                 <div className="flex mt-6">
                   <input
@@ -167,15 +156,21 @@ const todo = () => {
                   </div>
 
                   <div className="flex space-x-4 mx-auto mt-3">
-                    <img
-                      src={Edit}
-                      className="h-[20px] width-[20px]"
-                      alt="nature"
-                    />
+                    <button
+                      onClick={() => navigate(`/edit/${task._id}`)} // Assuming you have imported 'useNavigate' as 'navigate'
+                      className="focus:outline-none"
+                    >
+                      <img
+                        src={Edit}
+                        className="h-[20px] width-[20px]"
+                        alt="Edit"
+                      />
+                    </button>
                     <img
                       src={Delete}
-                      className="h-[20px] width-[20px]"
-                      alt="nature"
+                      className="h-[20px] width-[20px] cursor-pointer"
+                      alt="Delete"
+                      onClick={() => handleDeleteTask(task._id)}
                     />
                   </div>
                 </div>
